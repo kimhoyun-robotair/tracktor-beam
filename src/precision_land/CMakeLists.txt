@@ -21,11 +21,17 @@ add_executable(precision_land
     PrecisionLand.cpp
 )
 
+add_executable(precision_land_offboard
+    PrecisionLandOffboard.cpp
+)
+
 ament_target_dependencies(precision_land rclcpp Eigen3 px4_ros2_cpp geometry_msgs tf2_ros tf2)
+ament_target_dependencies(precision_land_offboard rclcpp Eigen3 px4_ros2_cpp geometry_msgs tf2_ros tf2)
 
 target_compile_features(precision_land PUBLIC c_std_99 cxx_std_17)
+target_compile_features(precision_land_offboard PUBLIC c_std_99 cxx_std_17)
 
-install(TARGETS precision_land DESTINATION lib/${PROJECT_NAME})
+install(TARGETS precision_land precision_land_offboard DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
