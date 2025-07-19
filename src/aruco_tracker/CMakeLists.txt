@@ -7,7 +7,7 @@ find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(px4_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -21,15 +21,18 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # link_directories(/usr/local/lib)
 
 add_executable(aruco_tracker ArucoTracker.cpp)
-
 target_link_libraries(aruco_tracker ${OpenCV_LIBRALIES})
-
 ament_target_dependencies(aruco_tracker 
 Eigen3 rclcpp px4_msgs sensor_msgs cv_bridge OpenCV)
-
 target_compile_features(aruco_tracker PUBLIC c_std_99 cxx_std_17)
-
 install(TARGETS aruco_tracker DESTINATION lib/${PROJECT_NAME})
+
+add_executable(lifecycle_aruco_tracker LifecycleArucoTracker.cpp)
+target_link_libraries(lifecycle_aruco_tracker ${OpenCV_LIBRARIES})
+ament_target_dependencies(lifecycle_aruco_tracker 
+Eigen3 rclcpp rclcpp_lifecycle px4_msgs sensor_msgs geometry_msgs cv_bridge OpenCV)
+target_compile_features(lifecycle_aruco_tracker PUBLIC c_std_99 cxx_std_17)
+install(TARGETS lifecycle_aruco_tracker DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)

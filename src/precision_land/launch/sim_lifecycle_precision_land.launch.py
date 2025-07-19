@@ -11,8 +11,8 @@ def generate_launch_description():
         # ),
         Node(
             package='precision_land',
-            executable='precision_land',
-            name='precision_land',
+            executable='precision_land_offboard_lifecycle',
+            name='precision_land_offboard_lifecycle',
             output='screen',
             parameters=[
                 PathJoinSubstitution([FindPackageShare('precision_land'), 'cfg', 'params.yaml'])

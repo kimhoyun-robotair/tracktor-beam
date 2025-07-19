@@ -9,6 +9,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 
 find_package(px4_ros2_cpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -17,21 +18,17 @@ find_package(tf2 REQUIRED)
 
 include_directories(${Eigen3_INCLUDE_DIRS})
 
-add_executable(precision_land
-    PrecisionLand.cpp
-)
-
 add_executable(precision_land_offboard
-    PrecisionLandOffboard.cpp
-)
-
-ament_target_dependencies(precision_land rclcpp Eigen3 px4_ros2_cpp geometry_msgs tf2_ros tf2)
+    PrecisionLandOffboard.cpp)
 ament_target_dependencies(precision_land_offboard rclcpp Eigen3 px4_ros2_cpp geometry_msgs tf2_ros tf2)
-
-target_compile_features(precision_land PUBLIC c_std_99 cxx_std_17)
 target_compile_features(precision_land_offboard PUBLIC c_std_99 cxx_std_17)
+install(TARGETS precision_land_offboard DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS precision_land precision_land_offboard DESTINATION lib/${PROJECT_NAME})
+add_executable(precision_land_offboard_lifecycle
+    LifecyclePrecisionLandOffboard.cpp)
+ament_target_dependencies(precision_land_offboard_lifecycle rclcpp Eigen3 px4_ros2_cpp geometry_msgs tf2_ros tf2 rclcpp_lifecycle)
+target_compile_features(precision_land_offboard_lifecycle PUBLIC c_std_99 cxx_std_17)
+install(TARGETS precision_land_offboard_lifecycle DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
