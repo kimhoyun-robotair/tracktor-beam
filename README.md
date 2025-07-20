@@ -17,12 +17,12 @@
 # 1번째 터미널
 cd tracktor-beam
 source install/setup.bash
-ros2 launch aruco_trakcer aruco_tracker.launch.py
+ros2 launch aruco_trakcer sim_aruco_tracker.launch.py
 
 # 2번째 터미널
 cd tracktor-beam
 source install/setup.bash
-ros2 launch precision_land precision_land.launch.py
+ros2 launch precision_land sim_precision_land.launch.py
 ```
 
 4. ROS2 Offboard 제어로서의 사용법
@@ -41,3 +41,24 @@ ros2 launch precision_land precision_land_offboard.launch.py
 
 5. 유의사항
 - Gazebo에서 사용할거면, `aruco_tracker.launch.py`와 `ArucoTracker.cpp` 안에 있는 토픽 내용을 적절하게 수정해줄 것
+
+
+6. Lifecycle을 적용해서 사용해보기
+- Lifecycle 기반 FSM과 같이 사용하기 위해서는 다음과 같이 실행을 해야한다.
+```bash
+# 1번째 터미널
+cd tracktor-beam
+source install/setup.bash
+ros2 launch aruco_tracker sim_lifecycle_aruco_tracker.launch.py
+
+# 2번째 터미널
+cd tracktor-beam
+source install/setup.bash
+ros2 launch precision_land sim_lifecycle_precision_land.launch.py
+```
+- 혹은 다음과 같이 실행해도 된다.
+```bash
+cd DOK4
+source install/setup.bash
+ros2 launch final_mission sim_final_mission.launch.py
+```

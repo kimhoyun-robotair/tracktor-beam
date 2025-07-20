@@ -11,6 +11,7 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/core/quaternion.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <std_msgs/msg/bool.hpp>
 
 class LifecycleArucoTracker : public rclcpp_lifecycle::LifecycleNode
 {
@@ -43,6 +44,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr _camera_info_sub;
     rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::Image>::SharedPtr _image_pub;
     rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PoseStamped>::SharedPtr _target_pose_pub;
+    rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Bool>::SharedPtr _precision_land_pub;
 
     cv::Ptr<cv::aruco::Dictionary> _dictionary;
     cv::Ptr<cv::aruco::DetectorParameters> _detector_params;

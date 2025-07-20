@@ -19,17 +19,18 @@ LifecycleArucoTracker::on_configure(const rclcpp_lifecycle::State &)
     auto qos = rclcpp::QoS(1).best_effort();
 
     _image_sub = create_subscription<sensor_msgs::msg::Image>(
-        "/world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/image", qos,
+        "/world/aruco/model/standard_vtol_mono_cam_down_0/link/camera_link/sensor/imager/image", qos,
         std::bind(&LifecycleArucoTracker::image_callback, this, std::placeholders::_1)
     );
 
     _camera_info_sub = create_subscription<sensor_msgs::msg::CameraInfo>(
-        "/world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/camera_info", qos,
+        "/world/aruco/model/standard_vtol_mono_cam_down_0/link/camera_link/sensor/imager/camera_info", qos,
         std::bind(&LifecycleArucoTracker::camera_info_callback, this, std::placeholders::_1)
     );
 
     _image_pub       = create_publisher<sensor_msgs::msg::Image>("/image_proc", qos);
     _target_pose_pub = create_publisher<geometry_msgs::msg::PoseStamped>("/target_pose", qos);
+    _precision_land_pub = create_publisher<std_msgs::msg::Bool>("precision_land_offboard_lifecycle/ready", rclcpp::QoS(1).transient_local());
 
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -41,6 +42,11 @@ LifecycleArucoTracker::on_activate(const rclcpp_lifecycle::State & state)
     LifecycleNode::on_activate(state);
     _image_pub->on_activate();
     _target_pose_pub->on_activate();
+
+    std_msgs::msg::Bool precision_land_msgs;
+    precision_land_msgs.data = true;
+    _precision_land_pub->on_activate();
+    _precision_land_pub->publish(precision_land_msgs);
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -51,6 +57,7 @@ LifecycleArucoTracker::on_deactivate(const rclcpp_lifecycle::State & state)
     LifecycleNode::on_deactivate(state);
     _image_pub->on_deactivate();
     _target_pose_pub->on_deactivate();
+    _precision_land_pub->on_deactivate();
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -62,6 +69,7 @@ LifecycleArucoTracker::on_cleanup(const rclcpp_lifecycle::State &)
     _camera_info_sub.reset();
     _image_pub.reset();
     _target_pose_pub.reset();
+    _precision_land_pub.reset();
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 

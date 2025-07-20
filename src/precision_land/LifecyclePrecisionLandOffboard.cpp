@@ -22,6 +22,8 @@ LifecyclePrecisionLand::on_configure(const rclcpp_lifecycle::State &)
         "/fmu/in/vehicle_command", _qos_profile);
     _trajectory_setpoint_pub = create_publisher<px4_msgs::msg::TrajectorySetpoint>(
         "/fmu/in/trajectory_setpoint", _qos_profile);
+    _precision_land_pub = create_publisher<std_msgs::msg::Bool>(
+        "precision_land_offboard_lifecycle/end", rclcpp::QoS(1).transient_local());
 
     _target_pose_sub = create_subscription<geometry_msgs::msg::PoseStamped>(
         "/target_pose", rclcpp::QoS(1).best_effort(),
@@ -51,6 +53,7 @@ LifecyclePrecisionLand::on_activate(const rclcpp_lifecycle::State & state)
     LifecycleNode::on_activate(state);
     _offboard_ctrl_pub->on_activate();
     _vehicle_cmd_pub->on_activate();
+    _precision_land_pub->on_activate();
     _trajectory_setpoint_pub->on_activate();
     _ctrl_timer = create_wall_timer(
         std::chrono::milliseconds(50),
@@ -65,6 +68,7 @@ LifecyclePrecisionLand::on_deactivate(const rclcpp_lifecycle::State & state)
     LifecycleNode::on_activate(state);
     _offboard_ctrl_pub->on_deactivate();
     _vehicle_cmd_pub->on_deactivate();
+    _precision_land_pub->on_deactivate();
     _trajectory_setpoint_pub->on_deactivate();
     _ctrl_timer->cancel();
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -80,6 +84,7 @@ LifecyclePrecisionLand::on_cleanup(const rclcpp_lifecycle::State &)
     _vehicle_attitude_sub.reset();
     _offboard_ctrl_pub.reset();
     _vehicle_cmd_pub.reset();
+    _precision_land_pub.reset();
     _trajectory_setpoint_pub.reset();
     _ctrl_timer.reset();
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -534,9 +539,17 @@ void LifecyclePrecisionLand::controlLoop(){
 
     case State::Descend: {
         if (target_lost) {
-            RCLCPP_INFO(get_logger(), "Failed! Target lost during %s", stateName(_state).c_str());
-            switchToState(State::Idle);
-            return;
+            if (_current_local_position.z >= (-0.8)){
+                std_msgs::msg::Bool msg;
+                msg.data = true;
+                _precision_land_pub->publish(msg);
+                switchToState(State::Finished);
+                return;
+            } else {
+                RCLCPP_INFO(get_logger(), "Failed! Target lost during %s", stateName(_state).c_str());
+                switchToState(State::Idle);
+                return;
+            }
         }
 
         Eigen::Vector2f vel = calculateVelocitySetpointXY();

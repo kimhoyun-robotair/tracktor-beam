@@ -16,6 +16,7 @@
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
+#include <std_msgs/msg/bool.hpp>
 
 #include <vector>
 #include <chrono>
@@ -84,6 +85,7 @@ private:
     rclcpp_lifecycle::LifecyclePublisher<px4_msgs::msg::OffboardControlMode>::SharedPtr _offboard_ctrl_pub;
     rclcpp_lifecycle::LifecyclePublisher<px4_msgs::msg::VehicleCommand>::SharedPtr _vehicle_cmd_pub;
     rclcpp_lifecycle::LifecyclePublisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr _trajectory_setpoint_pub;
+    rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Bool>::SharedPtr _precision_land_pub;    
 
     rclcpp::TimerBase::SharedPtr _ctrl_timer;
     void loadParameters();
