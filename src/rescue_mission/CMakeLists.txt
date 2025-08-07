@@ -8,7 +8,27 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+include_directories(${Eigen3_INCLUDE_DIRS})
+
+
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY cfg DESTINATION share/${PROJECT_NAME}/)
+
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+
+# Install Python executables
+install(PROGRAMS
+  scripts/pose_from_yolo.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -21,13 +41,5 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-add_executable(rescue_yolo src/rescue_yolo.cpp)
-ament_target_dependencies(rescue_yolo rclcpp std_msgs)
-
-install(TARGETS
-  rescue_yolo
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 ament_package()

@@ -13,12 +13,12 @@ ArucoTrackerNode::ArucoTrackerNode()
     auto qos = rclcpp::QoS(1).best_effort();
 
     _image_sub = create_subscription<sensor_msgs::msg::Image>(
-        "/world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/image", qos,
+        "/camera/camera/color/image_raw", qos,
         std::bind(&ArucoTrackerNode::image_callback, this, std::placeholders::_1)
     );
 
     _camera_info_sub = create_subscription<sensor_msgs::msg::CameraInfo>(
-        "/world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/camera_info", qos,
+        "/camera/camera/color/camera_info", qos,
         std::bind(&ArucoTrackerNode::camera_info_callback, this, std::placeholders::_1)
     );
 
